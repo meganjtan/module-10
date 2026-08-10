@@ -19,7 +19,7 @@ BasicCalculator::BasicCalculator(double operand1, double operand2, double result
     this->operand1 = operand1;
     this->operand2 = operand2;
     this->result = result;
-    strncpy(this->expression, expression, 50);
+    setExpression(expression); //cstrings must always end in '\0'
 }
 
 //Setters
@@ -28,8 +28,8 @@ void BasicCalculator::setOperand2(double operand2){ this->operand2 = operand2; }
 void BasicCalculator::setResult(double result) { this->result = result; }
 void BasicCalculator::setID(int id) { this->id = id; }
 void BasicCalculator::setExpression(const char* expression){
-    strncpy(this->expression, expression, 49);
-    this->expression[49]='\0';
+    strncpy(this->expression, expression, 49); //save 49 characters, leave 50th open for null terminator '\0'
+    this->expression[49]='\0'; //cstrings must always end in '\0'
 }
 
 //Getters
