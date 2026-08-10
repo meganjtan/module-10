@@ -5,16 +5,16 @@ https://github.com/meganjtan/module-10.git
 The github repo includes the code - main.cpp, Class Implementation, Class Specification - as well as screenshots of a sample console output.  
 
 
-**INSTRUCTIONS**
+### Instructions
 
-To run in terminal:
+#### To run in terminal:
 ```
 clang++ main.cpp BasicCalculator.cpp -o filename
 ./filename
 ```
 
 
-What it does:
+#### What it does:
 
 The main (driver) displays a menu of options to choose from to test the capabilities of the BasicCalculator object. 
 
