@@ -2,10 +2,10 @@
 
 https://github.com/meganjtan/module-10.git
 
-The github repo includes the code - main.cpp, Class Implementation, Class Specification - as well as screenshots of a sample console output.
+The github repo includes the code - main.cpp, Class Implementation, Class Specification - as well as screenshots of a sample console output.  
 
 
-INSTRUCTIONS
+**INSTRUCTIONS**
 
 To run in terminal:
 ```
@@ -18,7 +18,8 @@ What it does:
 
 The main (driver) displays a menu of options to choose from to test the capabilities of the BasicCalculator object. 
 
-The calculation info is written and read from the binary file "calculator_hisory.dat".
+The calculation info is written and read from the binary file "calculator_history.dat".
+
 
 The menu allows users to:
 
