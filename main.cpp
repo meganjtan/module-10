@@ -2,14 +2,24 @@
 // CIS 1202 801
 // Aug 9, 2026
 // Module 10 - Final Project
-// Main
+// Main - Basic Calculator
 
-//math operations
-//class type .h gile - get, set, display. include an overloaded function
-//base/derived class or a template
-//binary file
-//validated user input
-//format output <iomanip>
+/* INSTRUCTIONS
+
+To run in terminal:
+    clang++ main.cpp BasicCalculator.cpp -o filename
+    ./filename
+
+What it does:
+    The main (driver) displays a menu of options to choose from to test the capabilities of the BasicCalculator object. 
+    The calculation info is written and read from the binary file "calculator_hisory.dat".
+    The menu allows users to:
+        1. Perform basic calculations (+, -, *, /, ^)
+        2. Perform single operand calculations (sqrt, sin, cos, tan, log)
+        3. Display all calculated history
+        4. Search for a calculation
+        5. Exit the program
+*/
 
 //0. LIBRARIES AND PROTOTYPES
 #include <iomanip>
@@ -29,17 +39,17 @@ template <typename T> T validation (T num);
 //1. MAIN
 int main(){
     fstream file("calculator_history.dat", ios::in | ios::out | ios::binary | ios::trunc); //read, write, binary, clear old data 
-    int idCounter = 0;
-    int choice;
-    cout << fixed << setprecision(2);
+    int idCounter = 0; //id, and keeps count of how many calculations done
+    int choice; //menu choice
+    cout << fixed << setprecision(2); //go ahead and set console display #no. precision
 
     if(!file){ //if file can't be opened for some reason
         cout << "[Error opening file]" << endl;
         return 1;
     }
 
-    do{
-        choice = menu();
+    do{ //do menu
+        choice = menu(); //get choice, does validation
         cout << endl;
         switch(choice){
             case 1: //perform double operand calculations (+, -, *, /, ^)
@@ -64,8 +74,8 @@ int main(){
                 cout << "[Invalid selection]" << endl;
                 break;
         }
-    } while(choice != 5);
-    file.close(); //end. close file
+    } while(choice != 5); //user choice = 5 = exit
+    file.close(); 
     cout << "Goodbye!" << endl;
     cout << endl;
     return 0;
@@ -105,14 +115,14 @@ int menu(){
 
 /** 2.2
  *  @brief Perform double operand calculations (+, -, *, /, ^)
- *  @param idCounter keeps track of records
+ *  @param idCounter keeps track of records, fstream writes calculation to file to save it
  */
 void calculations1(int& idCounter, fstream& file){
-    char opChar;
-    double op1, op2 = 0.0;
-    bool validOp;
+    char opChar; //operation choice
+    double op1, op2 = 0.0; //two operands
+    bool validOp; //validation for opChar
 
-    do{
+    do{ //input validation for opChar
         cout << "Enter operator (+, -, *, /, ^): ";
         if(cin>>opChar && (opChar == '+' || opChar == '-' || opChar == '*' || opChar == '/' || opChar == '^')){
             validOp = true; 
@@ -124,9 +134,11 @@ void calculations1(int& idCounter, fstream& file){
             validOp = false;
         }
     } while(!validOp);
+
+    //input validation for op1, op2
     cout << "Enter first operand: ";
     op1 = validation(op1);
-    if(opChar == '/'){
+    if(opChar == '/'){ //division by 0 is undefined
         cout << "Enter second operand (/= 0): ";
         op2 = validation(op2);
         while(op2==0.0){
@@ -138,16 +150,21 @@ void calculations1(int& idCounter, fstream& file){
         op2 = validation(op2);
     }
    
+    //calculator computes
     BasicCalculator calc;
     calc.setID(++idCounter);
     calc.compute(op1, op2, opChar);
+
+    //display to console
     cout << "Result: " << calc.getResult() << endl;
-    saveRecord(calc, file);
+
+    //save to binary file
+    saveRecord(calc, file); 
 }
 
 /** 2.3
  *  @brief Perform single operand calculations (sqrt, sin, cos, tan, log)
- *  @param idCounter keeps track of records
+ *  @param idCounter keeps track of records, fstream writes calculation to file to save it
  */
 void calculations2(int& idCounter, fstream& file){
     cout << "--- Advanced Scientific Math Operation ---\n";
@@ -189,46 +206,53 @@ void calculations2(int& idCounter, fstream& file){
         }
     }
 
+    //calc computes
     BasicCalculator calc;
     calc.setID(++idCounter);
     calc.compute(op1, functionChoice);
+
+    //display to console
     cout << "Result: " << calc.getResult() << endl;
+
+    //save to binary file
     saveRecord(calc, file);
 }
 
 /** 2.4
  *  @brief Display all calculator history
+ *  @param idCounter keeps track of records, fstream reads from file to display to console
  */
 void displayHistory(int& idCounter, fstream& file){
-    if(idCounter == 0){
+    if(idCounter == 0){ //no calculations made yet
         cout << "[Not Available. No calculations added yet.]" << endl;
-        return;
+        return; //end
     }
 
     file.clear(); //clears error flags
-    file.seekg(0, ios::beg); //start at beginning, no offset
+    file.seekg(0, ios::beg); //start at beginning of file, no offset
 
     BasicCalculator calc;
-    while(file.read(reinterpret_cast<char*>(&calc), sizeof(BasicCalculator))){
-        calc.displayInfo();
+    while(file.read(reinterpret_cast<char*>(&calc), sizeof(BasicCalculator))){ //read in each calculation and display to console
+        calc.displayInfo(); 
         cout << endl;
     }
 }
 
 /** 2.5
  *  @brief Search and display a calculation
+ *  @param idCounter keeps track of records, fstream reads from file to display to console
  */
 void searchHistory(int& idCounter, fstream& file){
     file.clear(); //clears error flags
     
     int searchID;
     cout << "Enter an ID to search: ";
-    searchID = validation(searchID);
+    searchID = validation(searchID); //input validation
 
     BasicCalculator calc;
-    if(searchID <= idCounter && searchID > 0){
-        file.seekg((searchID-1)*sizeof(BasicCalculator), ios::beg);
-        file.read(reinterpret_cast<char*>(&calc), sizeof(BasicCalculator));
+    if(searchID <= idCounter && searchID > 0){ //if search is within the #no. of searches, continue
+        file.seekg((searchID-1)*sizeof(BasicCalculator), ios::beg); //place iterator @ point of search ID (beginning + offset) - file is 0 indexed and my records start at 1, thus id-1 = file index
+        file.read(reinterpret_cast<char*>(&calc), sizeof(BasicCalculator)); //read in the record
         cout << "[record found.]" << endl;
         calc.displayInfo();
         return;
@@ -248,7 +272,7 @@ void saveRecord(const BasicCalculator& calc, fstream& file){
 }
 
 /** 2.8
- *  @brief Input validation for any number data types
+ *  @brief Template for input validation for typename T data types
  *  @param T num
  *  @return T num
  */

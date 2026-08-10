@@ -4,7 +4,6 @@
 // Module 10 - Final Project
 // Class Implementation - Basic Calculator
 
-
 #include "BasicCalculator.h"
 using namespace std;
 
